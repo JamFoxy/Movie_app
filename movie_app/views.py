@@ -11,11 +11,11 @@ def get_all_director_list(request):
     return Response(data)
 
 @api_view(['GET'])
-def director_details(request, director_id):
+def director_details(request):
     try:
-        director = Director.objects.get(id=director_id)
+        director = Director.objects.all()
     except Director.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND, data={'message': "Режиссер не найден"})
+        return Response(status=status.HTTP_404_NOT_FOUND, data={'message': "Director not found"})
     data = DirectorSerializer(director).data
     return Response(data=data)
 
@@ -31,7 +31,7 @@ def movie_details(request, movie_id):
     try:
         movie = Movie.objects.get(id=movie_id)
     except Movie.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND, data={'message': "Фильм не найден"})
+        return Response(status=status.HTTP_404_NOT_FOUND, data={'message': "Movie is not found"})
     data = MovieSerializer(movie).data
     return Response(data=data)
 
@@ -48,6 +48,20 @@ def review_details(request, review_id):
     try:
         review = Review.objects.get(id=review_id)
     except Review.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND, data={'message': "Отзыв не найден"})
+        return Response(status=status.HTTP_404_NOT_FOUND, data={'message': "Review is not found"})
     data = ReviewSerializer(review).data
     return Response(data=data)
+
+@api_view(['GET'])
+def test(request):
+    context = {
+        'name': "James",
+        'age': 12,
+        'hobby': 'filming',
+        'boolean': True,
+        'list': [
+            '1', '2', '3'
+        ]
+    }
+
+    return Response(data=context)
