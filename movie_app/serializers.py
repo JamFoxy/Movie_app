@@ -24,21 +24,16 @@ class DirectorSerializer(serializers.ModelSerializer):
 
 class MovieSerializer(serializers.ModelSerializer):
     genre = serializers.SerializerMethodField()
-    reviews = serializers.SerializerMethodField()
 
     class Meta:
         model = Movie
-        fields = 'id title director genre reviews count_reviews all_reviews average_rating'.split()
+        fields = 'id title director genre count_reviews all_reviews avg_reviews'.split()
 
     def get_genre(self, movie):
         try:
             return movie.genre.name
         except:
             return 'No genre'
-
-    def get_reviews(self, movie):
-        serializer = ReviewSerializer(Review.objects.filter(author__isnull=False, movie=movie), many=True)
-        return serializer.data
 
     def count_reviews(self, reviews):
         return reviews.all().count()

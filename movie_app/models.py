@@ -37,27 +37,24 @@ class Movie(models.Model):
         return reviews.all().count()
 
     @property
-    def average_rating(self):
-        return self.reviews.aggregate(Avg('rate_stars'))['rate_stars__avg']
+    def all_reviews(self):
+        reviews = Review.objects.all()
+        return [{'stars': i.stars} for i in reviews]
 
     @property
-    def all_reviews(self):
+    def avg_reviews(self):
         reviews = Review.objects.filter(movie=self)
-        return [{'text': i.text} for i in reviews]
-
+        res = [int(i.stars) for i in reviews]
+        try:
+            return round(sum(res) / len(res))
+        except:
+            return 0
 
 class Review(models.Model):
-    STARS = (
-        ('*', '*'),
-        ('**', '**'),
-        ('***', '***'),
-        ('****', '****'),
-        ('*****', '*****'),
-    )
-    text = models.TextField()
-    rate_stars = models.CharField(max_length=100, choices=STARS, null=True)
+
+    stars = models.CharField()
     author = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
-    movie = models.ForeignKey(Movie, on_delete=models.CASCADE, related_name='movie')
+    movie = models.ForeignKey(Movie, on_delete=models.CASCADE, related_name='review')
 
     def __str__(self):
         return self.movie.title
